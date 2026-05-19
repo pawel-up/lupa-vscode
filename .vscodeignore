@@ -1,0 +1,8 @@
+.vscode/**
+src/**
+out/**/*.map
+architecture.md
+esbuild.mjs
+tsconfig.json
+package-lock.json
+.vscodeignore

@@ -1,0 +1,69 @@
+{
+  "name": "lupa-vscode",
+  "displayName": "Lupa Test Explorer",
+  "description": "Run and explore Lupa tests from the VSCode Testing sidebar",
+  "version": "0.1.0",
+  "publisher": "PawelUchida-Psztyc",
+  "author": {
+    "name": "Pawel Uchida-Psztyc"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pawel-up/lupa-vscode.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pawel-up/lupa-vscode/issues"
+  },
+  "homepage": "https://github.com/pawel-up/lupa-vscode#readme",
+  "keywords": [
+    "lupa",
+    "testing",
+    "test explorer",
+    "web components",
+    "vite",
+    "playwright"
+  ],
+  "engines": {
+    "vscode": "^1.120.0"
+  },
+  "categories": [
+    "Testing"
+  ],
+  "activationEvents": [
+    "workspaceContains:**/lupa.config.ts",
+    "workspaceContains:**/lupa.config.js"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Lupa",
+      "properties": {
+        "lupa.binPath": {
+          "type": "string",
+          "default": "",
+          "description": "Override path to the lupa binary. Defaults to node_modules/.bin/lupa in the workspace root."
+        },
+        "lupa.verbose": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable verbose logging in the Lupa output channel (logs every NDJSON event during test runs)."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
+    "typecheck": "tsc --noEmit",
+    "package": "npm run compile && vsce package",
+    "publish": "npm run compile && vsce publish"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.41",
+    "@types/vscode": "^1.120.0",
+    "@vscode/vsce": "^3.0.0",
+    "esbuild": "^0.28.0",
+    "typescript": "^6.0.3"
+  }
+}

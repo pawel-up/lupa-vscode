@@ -173,6 +173,7 @@ describe('runner.ts', () => {
         failed: vi.fn(),
         skipped: vi.fn(),
         end: vi.fn(),
+        appendOutput: vi.fn(),
       } as unknown as vscode.TestRun
 
       const fileItem = createMockTestItem('file1', 'test.ts', '/mock/test.ts')

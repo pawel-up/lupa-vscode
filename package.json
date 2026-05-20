@@ -2,7 +2,7 @@
   "name": "lupa-vscode",
   "displayName": "Lupa Test Explorer",
   "description": "Run and explore Lupa tests from the VSCode Testing sidebar",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "icon": "assets/lupa-icon.png",
   "galleryBanner": {
     "color": "#1A2233",
@@ -31,7 +31,7 @@
     "playwright"
   ],
   "engines": {
-    "vscode": "^1.120.0"
+    "vscode": "^1.107.0"
   },
   "categories": [
     "Testing"
@@ -68,7 +68,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.19.41",
-    "@types/vscode": "^1.120.0",
+    "@types/vscode": "^1.107.0",
     "@vscode/vsce": "^3.0.0",
     "esbuild": "^0.28.0",
     "typescript": "^6.0.3",

@@ -2,7 +2,7 @@ import * as cp from 'child_process'
 import * as readline from 'readline'
 import * as vscode from 'vscode'
 import type { LupaConfig } from './config'
-import { testItemId } from './discovery'
+import { testItemId, fileItemId } from './discovery'
 import { log, logVerbose } from './logger'
 
 /**
@@ -18,7 +18,7 @@ interface NdjsonEvent {
   hasError?: boolean
   isSkipped?: boolean
   isTodo?: boolean
-  errors?: Array<{ phase: string; error: { message?: string; name?: string } }>
+  errors?: Array<{ phase: string; error: { message?: string; name?: string; stack?: string } }>
   /** Absolute path to the current test file, emitted on test:end */
   filePath?: string
 }
@@ -73,6 +73,7 @@ export async function runTests(
 
     if (event.event === 'group:start') {
       currentGroup = titleString(event.title)
+      run.appendOutput(`\r\n▶ ${currentGroup}\r\n`)
       logVerbose(`  group:start → "${currentGroup}"`)
       return
     }
@@ -104,13 +105,16 @@ export async function runTests(
       const hasError = errors.length > 0
       logVerbose(`  test:end title="${title}" file="${filePath}" group="${currentGroup}" hasError=${hasError}`)
 
+      const duration = event.duration ?? 0
+      const durationStr = duration > 0 ? ` (${duration.toFixed(0)}ms)` : ''
+      const mark = event.isSkipped ? '⚠' : hasError ? '✖' : '✔'
+      run.appendOutput(`  ${mark} ${title}${durationStr}\r\n`)
+
       const item = resolveTestItem(controller, filePath, currentGroup, title)
       if (!item) {
         log(`WARNING: no TestItem found for test:end (id=${testItemId(filePath ?? '', currentGroup, title ?? '')})`)
         return
       }
-
-      const duration = event.duration ?? 0
 
       if (event.isSkipped || event.isTodo) {
         run.skipped(item)
@@ -118,7 +122,14 @@ export async function runTests(
       }
 
       if (hasError) {
-        const msg = errors[0].error.message ?? 'Test failed'
+        const msg = errors[0]?.error?.message ?? 'Test failed'
+        const stack = errors[0]?.error?.stack
+        if (stack) {
+          // ensure stack uses \r\n
+          run.appendOutput(`\r\n${stack.replace(/\r?\n/g, '\r\n')}\r\n`)
+        } else {
+          run.appendOutput(`\r\n    ${msg}\r\n`)
+        }
         run.failed(item, new vscode.TestMessage(msg), duration)
       } else {
         run.passed(item, duration)
@@ -240,7 +251,45 @@ export function resolveTestItem(
   if (!filePath || !testTitle) return undefined
 
   const id = testItemId(filePath, groupTitle, testTitle)
-  return findById(controller.items, id)
+  let item = findById(controller.items, id)
+  if (item) return item
+
+  // Fallback 1: Try without groupTitle
+  const noGroupId = testItemId(filePath, undefined, testTitle)
+  item = findById(controller.items, noGroupId)
+  if (item) return item
+
+  // Fallback 2: NDJSON stream interleaves, so currentGroup is unreliable.
+  // Search all children of the file item for a test with the matching title.
+  const fileItem = findById(controller.items, fileItemId(filePath))
+  if (fileItem) {
+    const found = findTestByTitle(fileItem, testTitle)
+    if (found) return found
+  }
+
+  // Fallback 3: Even filePath can be unreliable due to NDJSON reporter concurrency bugs.
+  // Search globally across all files for a test with the matching title.
+  let globalFound: vscode.TestItem | undefined
+  controller.items.forEach(file => {
+    if (globalFound) return
+    globalFound = findTestByTitle(file, testTitle)
+  })
+  if (globalFound) return globalFound
+
+  return undefined
+}
+
+function findTestByTitle(parent: vscode.TestItem, testTitle: string): vscode.TestItem | undefined {
+  let found: vscode.TestItem | undefined
+  parent.children.forEach((child) => {
+    if (found) return
+    if (child.id.startsWith('test:') && child.label === testTitle) {
+      found = child
+      return
+    }
+    found = findTestByTitle(child, testTitle)
+  })
+  return found
 }
 
 export function findById(

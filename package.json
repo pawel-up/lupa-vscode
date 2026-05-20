@@ -2,7 +2,7 @@
   "name": "lupa-vscode",
   "displayName": "Lupa Test Explorer",
   "description": "Run and explore Lupa tests from the VSCode Testing sidebar",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "icon": "assets/lupa-icon.png",
   "galleryBanner": {
     "color": "#1A2233",

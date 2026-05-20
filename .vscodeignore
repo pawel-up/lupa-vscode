@@ -1,8 +1,10 @@
 .vscode/**
 src/**
+tests/**
+!out/**
 out/**/*.map
-architecture.md
 esbuild.mjs
 tsconfig.json
 package-lock.json
 .vscodeignore
+!out/extension.js

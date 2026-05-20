@@ -157,7 +157,7 @@ export async function runTests(
 /**
  * Normalise a title field that may be a string or {original, expanded} object.
  */
-function titleString(title: NdjsonEvent['title']): string | undefined {
+export function titleString(title: NdjsonEvent['title']): string | undefined {
   if (!title) return undefined
   if (typeof title === 'string') return title
   return title.original
@@ -166,7 +166,7 @@ function titleString(title: NdjsonEvent['title']): string | undefined {
 /**
  * Build the CLI arguments for a given run request.
  */
-function buildArgs(
+export function buildArgs(
   request: vscode.TestRunRequest,
   controller: vscode.TestController,
   config: LupaConfig
@@ -211,9 +211,9 @@ function buildArgs(
   return base
 }
 
-type ItemLevel = 'file' | 'group' | 'test'
+export type ItemLevel = 'file' | 'group' | 'test'
 
-function detectLevel(item: vscode.TestItem): ItemLevel {
+export function detectLevel(item: vscode.TestItem): ItemLevel {
   if (!item.parent) return 'file'
   if (!item.parent.parent) {
     if (item.children.size > 0) return 'group'
@@ -222,7 +222,7 @@ function detectLevel(item: vscode.TestItem): ItemLevel {
   return 'test'
 }
 
-function resolveFileAncestor(item: vscode.TestItem): vscode.TestItem | undefined {
+export function resolveFileAncestor(item: vscode.TestItem): vscode.TestItem | undefined {
   let current: vscode.TestItem | undefined = item
   while (current) {
     if (!current.parent) return current
@@ -231,7 +231,7 @@ function resolveFileAncestor(item: vscode.TestItem): vscode.TestItem | undefined
   return undefined
 }
 
-function resolveTestItem(
+export function resolveTestItem(
   controller: vscode.TestController,
   filePath: string | undefined,
   groupTitle: string | undefined,
@@ -243,7 +243,7 @@ function resolveTestItem(
   return findById(controller.items, id)
 }
 
-function findById(
+export function findById(
   collection: vscode.TestItemCollection,
   id: string
 ): vscode.TestItem | undefined {
@@ -259,7 +259,7 @@ function findById(
   return found
 }
 
-function enqueueItems(
+export function enqueueItems(
   request: vscode.TestRunRequest,
   controller: vscode.TestController,
   run: vscode.TestRun
@@ -271,7 +271,7 @@ function enqueueItems(
   }
 }
 
-function enqueueRecursive(item: vscode.TestItem, run: vscode.TestRun): void {
+export function enqueueRecursive(item: vscode.TestItem, run: vscode.TestRun): void {
   run.enqueued(item)
   item.children.forEach((child) => enqueueRecursive(child, run))
 }

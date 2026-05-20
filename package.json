@@ -55,6 +55,7 @@
   "scripts": {
     "compile": "node esbuild.mjs",
     "watch": "node esbuild.mjs --watch",
+    "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "package": "npm run compile && vsce package",
     "publish": "npm run compile && vsce publish"
@@ -64,6 +65,7 @@
     "@types/vscode": "^1.120.0",
     "@vscode/vsce": "^3.0.0",
     "esbuild": "^0.28.0",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.6"
   }
 }

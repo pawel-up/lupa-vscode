@@ -117,7 +117,7 @@ export async function discoverTests(
   controller.items.replace([...fileItems.values()])
 }
 
-function makeFileItem(controller: vscode.TestController, fileName: string): vscode.TestItem {
+export function makeFileItem(controller: vscode.TestController, fileName: string): vscode.TestItem {
   const id = fileItemId(fileName)
   const label = fileName.split('/').pop() ?? fileName
   const uri = vscode.Uri.file(fileName)
@@ -125,7 +125,7 @@ function makeFileItem(controller: vscode.TestController, fileName: string): vsco
   return item
 }
 
-function makeGroupItem(
+export function makeGroupItem(
   controller: vscode.TestController,
   parent: vscode.TestItem,
   fileName: string,
@@ -137,7 +137,7 @@ function makeGroupItem(
   return item
 }
 
-function makeTestItem(
+export function makeTestItem(
   controller: vscode.TestController,
   parent: vscode.TestItem,
   fileName: string,
@@ -156,7 +156,7 @@ function makeTestItem(
  * single-line range so VSCode can place a gutter icon.
  * Returns undefined if the file cannot be read or the title is not found.
  */
-function findTestRange(fileName: string, testTitle: string): vscode.Range | undefined {
+export function findTestRange(fileName: string, testTitle: string): vscode.Range | undefined {
   let content: string
   try {
     content = fs.readFileSync(fileName, 'utf-8')
@@ -177,7 +177,7 @@ function findTestRange(fileName: string, testTitle: string): vscode.Range | unde
   return undefined
 }
 
-function runListCommand(config: LupaConfig): Promise<string | undefined> {
+export function runListCommand(config: LupaConfig): Promise<string | undefined> {
   return new Promise((resolve) => {
     const args = ['list', '--format', 'json', '--config', config.configPath]
     const proc = cp.spawn(config.binPath, args, { cwd: config.workspaceRoot })
